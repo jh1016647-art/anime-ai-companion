@@ -391,7 +391,7 @@ h1 {
 }
 
 .chat-log {
-  height: 360px;
+  height: 320px;
   overflow-y: auto;
   padding-right: 8px;
   display: flex;
@@ -444,6 +444,22 @@ h1 {
 .reply-btn:hover {
   transform: translateY(-1px);
   background: rgba(255, 255, 255, 0.1);
+}
+
+.special-actions {
+  margin: 10px 0 6px;
+}
+
+.bed-btn {
+  width: 100%;
+  border: none;
+  background: linear-gradient(135deg, #3d2e69, #ff5cb8);
+  color: white;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(255, 92, 184, 0.25);
 }
 
 .voice-row {

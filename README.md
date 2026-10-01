@@ -27,6 +27,7 @@ const restartBtn = document.getElementById("restartBtn");
 const voiceBtn = document.getElementById("voiceBtn");
 const voiceToggleBtn = document.getElementById("voiceToggleBtn");
 const voiceStatus = document.getElementById("voiceStatus");
+const bedSceneBtn = document.getElementById("bedSceneBtn");
 
 let recognition = null;
 
@@ -106,9 +107,9 @@ function getReplyForMessage(message) {
     };
   }
 
-  if (/(kiss|hug|hold|close|touch)/i.test(lower)) {
+  if (/(kiss|hug|hold|close|touch|bed|sleep)/i.test(lower)) {
     return {
-      response: "Aiko turns pink instantly. \"I-I would probably melt if you did that...\"",
+      response: "Aiko turns pink instantly. \"I-I think I’d like to stay close to you... let me make sure you’re comfortable.\"",
       delta: 13
     };
   }
@@ -196,6 +197,23 @@ function renderQuickReplies() {
     btn.addEventListener("click", () => runChoice(choice));
     quickRepliesContainer.appendChild(btn);
   });
+}
+
+function triggerBedScene() {
+  if (state.affection < 80) {
+    const message = "Aiko blushes and looks away. \"Not yet... I want to be closer to you before we do that.\"";
+    addMessage("ai", message);
+    speakText(message);
+    sceneQuote.textContent = "“Maybe later... when we are even closer.”";
+    return;
+  }
+
+  const message = "Aiko gently tucks you in, smoothing your hair and whispering, \"Sleep well... I’ll be right here when you wake up.\"";
+  state.affection = clampAffection(state.affection + 8);
+  updateUI();
+  addMessage("ai", message);
+  speakText(message);
+  sceneQuote.textContent = "“Rest now... I’ll stay beside you, just for a little while.”";
 }
 
 function initConversation() {
@@ -300,6 +318,8 @@ restartBtn.addEventListener("click", () => {
   updateUI();
   setVoiceStatus("Voice chat ready.");
 });
+
+bedSceneBtn.addEventListener("click", triggerBedScene);
 
 renderQuickReplies();
 initConversation();
