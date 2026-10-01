@@ -391,7 +391,7 @@ h1 {
 }
 
 .chat-log {
-  height: 430px;
+  height: 360px;
   overflow-y: auto;
   padding-right: 8px;
   display: flex;
@@ -444,6 +444,62 @@ h1 {
 .reply-btn:hover {
   transform: translateY(-1px);
   background: rgba(255, 255, 255, 0.1);
+}
+
+.voice-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.voice-btn,
+.voice-toggle {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.voice-btn {
+  background: linear-gradient(135deg, var(--pink-2), var(--purple));
+  color: white;
+  box-shadow: 0 12px 26px rgba(125, 90, 245, 0.25);
+}
+
+.voice-btn.listening {
+  animation: pulse 0.9s ease-in-out infinite alternate;
+  background: linear-gradient(135deg, #ff8e5d, #ff5cb8);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.03); }
+}
+
+.voice-toggle {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-soft);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.voice-toggle.active {
+  background: rgba(141, 230, 210, 0.12);
+  color: var(--mint);
+  border-color: rgba(141, 230, 210, 0.2);
+}
+
+.voice-status {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  min-height: 18px;
+  margin-bottom: 14px;
+}
+
+.voice-status.error {
+  color: var(--danger);
 }
 
 .chat-form {
@@ -515,5 +571,9 @@ h1 {
 
   .chat-form {
     grid-template-columns: 1fr;
+  }
+
+  .voice-row {
+    flex-direction: column;
   }
 }
