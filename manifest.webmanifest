@@ -1,0 +1,18 @@
+{
+  "name": "Love Letter: Aiko",
+  "short_name": "Aiko",
+  "description": "A romantic anime companion game with chat, voice, and dramatic love-sim scenes.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#181222",
+  "theme_color": "#221833",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
