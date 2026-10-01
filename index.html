@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Love Letter: Aiko</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <span class="brand-mark">❤</span>
+          <div>
+            <p class="eyebrow">Love sim</p>
+            <h1>Love Letter: Aiko</h1>
+          </div>
+        </div>
+        <button id="restartBtn" class="ghost-btn">Restart</button>
+      </header>
+
+      <main class="game-layout">
+        <section class="scene-panel">
+          <div class="hud">
+            <div class="stat-box">
+              <label>Affection</label>
+              <div class="meter-wrap">
+                <div id="affectionFill" class="meter-fill"></div>
+              </div>
+              <strong id="affectionValue">62%</strong>
+            </div>
+            <div class="stat-box">
+              <label>Mood</label>
+              <strong id="moodValue">Blushing</strong>
+            </div>
+          </div>
+
+          <div class="portrait-card">
+            <div class="sparkles sparkles-1"></div>
+            <div class="sparkles sparkles-2"></div>
+            <div class="girl-avatar" aria-label="Anime girl character portrait">
+              <div class="hair-back"></div>
+              <div class="head">
+                <div class="face">
+                  <span class="eye left"></span>
+                  <span class="eye right"></span>
+                  <span class="blush left"></span>
+                  <span class="blush right"></span>
+                  <span class="mouth"></span>
+                </div>
+              </div>
+              <div class="hair-front"></div>
+              <div class="neck"></div>
+              <div class="body"></div>
+              <div class="arm left"></div>
+              <div class="arm right"></div>
+            </div>
+          </div>
+
+          <div class="scene-text">
+            <p id="sceneQuote">“I’ve been waiting for you all day...”</p>
+          </div>
+        </section>
+
+        <section class="chat-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Your companion</p>
+              <h2>Aiko</h2>
+            </div>
+            <span class="status-dot">Online</span>
+          </div>
+
+          <div id="chatLog" class="chat-log" aria-live="polite"></div>
+
+          <div class="quick-replies" id="quickReplies"></div>
+
+          <form id="chatForm" class="chat-form">
+            <input
+              id="chatInput"
+              type="text"
+              maxlength="200"
+              placeholder="Say something sweet..."
+              aria-label="Type a message to Aiko"
+            />
+            <button type="submit">Send</button>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
