@@ -8,9 +8,9 @@ const quickReplies = [
 
 const state = {
   affection: 62,
+  anger: 12,
   mood: "Blushing",
   day: 1,
-  messages: [],
   autoVoice: true,
   listening: false
 };
@@ -21,6 +21,8 @@ const chatInput = document.getElementById("chatInput");
 const quickRepliesContainer = document.getElementById("quickReplies");
 const affectionFill = document.getElementById("affectionFill");
 const affectionValue = document.getElementById("affectionValue");
+const angerFill = document.getElementById("angerFill");
+const angerValue = document.getElementById("angerValue");
 const moodValue = document.getElementById("moodValue");
 const sceneQuote = document.getElementById("sceneQuote");
 const restartBtn = document.getElementById("restartBtn");
@@ -31,7 +33,7 @@ const bedSceneBtn = document.getElementById("bedSceneBtn");
 
 let recognition = null;
 
-function clampAffection(value) {
+function clampValue(value) {
   return Math.max(0, Math.min(100, value));
 }
 
@@ -40,7 +42,9 @@ function setVoiceStatus(message, isError = false) {
   voiceStatus.classList.toggle("error", isError);
 }
 
-function getMood(affection) {
+function getMood(affection, anger) {
+  if (anger >= 70 && affection >= 80) return "Intensely in love";
+  if (anger >= 50) return "Jealous";
   if (affection >= 85) return "Head over heels";
   if (affection >= 70) return "Blushing";
   if (affection >= 50) return "Happy";
@@ -49,19 +53,28 @@ function getMood(affection) {
 }
 
 function updateUI() {
-  const clamped = clampAffection(state.affection);
-  state.mood = getMood(clamped);
-  affectionFill.style.width = `${clamped}%`;
-  affectionValue.textContent = `${clamped}%`;
+  const affectionLevel = clampValue(state.affection);
+  const angerLevel = clampValue(state.anger);
+  state.mood = getMood(affectionLevel, angerLevel);
+
+  affectionFill.style.width = `${affectionLevel}%`;
+  affectionValue.textContent = `${affectionLevel}%`;
+
+  angerFill.style.width = `${angerLevel}%`;
+  angerValue.textContent = `${angerLevel}%`;
   moodValue.textContent = state.mood;
 
-  if (clamped >= 90) {
+  if (angerLevel >= 70 && affectionLevel >= 80) {
+    sceneQuote.textContent = "“You made me mad... but somehow that only made me want you closer.”";
+  } else if (angerLevel >= 50) {
+    sceneQuote.textContent = "“I’m upset... but I still can’t stop thinking about you.”";
+  } else if (affectionLevel >= 90) {
     sceneQuote.textContent = "“You are the only one I ever want to see when I wake up...”";
-  } else if (clamped >= 75) {
+  } else if (affectionLevel >= 75) {
     sceneQuote.textContent = "“Your voice makes my heart feel so warm...”";
-  } else if (clamped >= 55) {
+  } else if (affectionLevel >= 55) {
     sceneQuote.textContent = "“I’m happy just being close to you...”";
-  } else if (clamped >= 30) {
+  } else if (affectionLevel >= 30) {
     sceneQuote.textContent = "“I’m still learning how to be brave around you...”";
   } else {
     sceneQuote.textContent = "“I’m a little nervous, but I really like talking to you...”";
@@ -76,10 +89,43 @@ function addMessage(from, text) {
   chatLog.scrollTop = chatLog.scrollHeight;
 }
 
+function applyEmotionalShift(message) {
+  const lower = message.toLowerCase();
+
+  const ignored = /(ignore|leave me|abandon|not talk|don’t care|doesn’t matter|busy all day|forget me)/i.test(lower);
+  const gentle = /(sorry|i'm here|i care|stay|i love you|don’t leave|need you|i’ll be with you)/i.test(lower);
+  const jealous = /(angry|jealous|mad|hurt|hate me|why didn’t you)/i.test(lower);
+
+  if (ignored) {
+    state.anger = clampValue(state.anger + 18);
+    state.affection = clampValue(state.affection + 12);
+    return "Aiko’s expression sharpens. \"I was upset... but even then, I still wanted you.\"";
+  }
+
+  if (jealous) {
+    state.anger = clampValue(state.anger + 10);
+    state.affection = clampValue(state.affection + 8);
+    return "Aiko looks away, then quietly admits, \"I get mad when I think I might lose you... because I care too much.\"";
+  }
+
+  if (gentle) {
+    state.anger = clampValue(state.anger - 16);
+    state.affection = clampValue(state.affection + 10);
+    return "Aiko softens instantly. \"Then stay... I don’t want to be angry at you when I love you this much.\"";
+  }
+
+  if (/(love|heart|miss|need)/i.test(lower)) {
+    state.affection = clampValue(state.affection + 8);
+    return "Aiko’s breathing slows, and she whispers, \"Then don’t make me fall even harder for you.\"";
+  }
+
+  return null;
+}
+
 function getReplyForMessage(message) {
   const lower = message.toLowerCase();
 
-  if (/(love|ador|heart|fall for|miss)/i.test(lower)) {
+  if (/(love|ador|heart|fall for|miss|need you)/i.test(lower)) {
     return {
       response: "Aiko smiles shyly. \"I... I feel the same way. I’ve been thinking about you too.\"",
       delta: 14
@@ -121,14 +167,14 @@ function getReplyForMessage(message) {
     };
   }
 
-  if (/(jealous|angry|sad|alone|lonely)/i.test(lower)) {
+  if (/(jealous|angry|sad|alone|lonely|ignore|leave)/i.test(lower)) {
     return {
       response: "Aiko lowers her gaze. \"I don’t like seeing you sad... I want to be the one who makes you smile.\"",
       delta: 9
     };
   }
 
-  if (/(thank you|you’re kind|care|support)/i.test(lower)) {
+  if (/(thank you|you’re kind|care|support|sorry)/i.test(lower)) {
     return {
       response: "Aiko gently laughs. \"You make it easy to feel safe around you.\"",
       delta: 8
@@ -171,7 +217,14 @@ function speakText(text) {
 
 function processUserMessage(message) {
   const result = getReplyForMessage(message);
-  state.affection = clampAffection(state.affection + result.delta);
+  const emotionalShift = applyEmotionalShift(message);
+
+  state.affection = clampValue(state.affection + result.delta);
+  if (emotionalShift) {
+    addMessage("ai", emotionalShift);
+    speakText(emotionalShift);
+  }
+
   updateUI();
   addMessage("ai", result.response);
   speakText(result.response);
@@ -180,7 +233,15 @@ function processUserMessage(message) {
 
 function runChoice(choice) {
   addMessage("user", choice.text);
-  state.affection = clampAffection(state.affection + (choice.affinity || 0));
+  const addedAffect = choice.affinity || 0;
+  state.affection = clampValue(state.affection + addedAffect);
+
+  const emotionalShift = applyEmotionalShift(choice.text);
+  if (emotionalShift) {
+    addMessage("ai", emotionalShift);
+    speakText(emotionalShift);
+  }
+
   updateUI();
   addMessage("ai", choice.response);
   speakText(choice.response);
@@ -200,6 +261,17 @@ function renderQuickReplies() {
 }
 
 function triggerBedScene() {
+  if (state.anger >= 60 && state.affection >= 70) {
+    const message = "Aiko’s eyes burn with feeling as she pulls you close and whispers, \"You made me mad... but I still love you too much to let you go. Sleep now, and don’t leave me alone tonight.\"";
+    state.affection = clampValue(state.affection + 10);
+    state.anger = clampValue(state.anger - 10);
+    updateUI();
+    addMessage("ai", message);
+    speakText(message);
+    sceneQuote.textContent = "“You may have made me mad... but I still can’t bear to be apart from you.”";
+    return;
+  }
+
   if (state.affection < 80) {
     const message = "Aiko blushes and looks away. \"Not yet... I want to be closer to you before we do that.\"";
     addMessage("ai", message);
@@ -209,7 +281,7 @@ function triggerBedScene() {
   }
 
   const message = "Aiko gently tucks you in, smoothing your hair and whispering, \"Sleep well... I’ll be right here when you wake up.\"";
-  state.affection = clampAffection(state.affection + 8);
+  state.affection = clampValue(state.affection + 8);
   updateUI();
   addMessage("ai", message);
   speakText(message);
@@ -312,6 +384,7 @@ voiceToggleBtn.addEventListener("click", () => {
 
 restartBtn.addEventListener("click", () => {
   state.affection = 62;
+  state.anger = 12;
   state.day = 1;
   chatLog.innerHTML = "";
   initConversation();

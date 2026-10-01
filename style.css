@@ -130,7 +130,7 @@ h1 {
 
 .hud {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 18px;
 }
@@ -161,12 +161,21 @@ h1 {
 }
 
 .meter-fill {
-  width: 62%;
   height: 100%;
   border-radius: inherit;
+  transition: width 0.35s ease;
+}
+
+.affection-meter {
+  width: 62%;
   background: linear-gradient(90deg, var(--pink-2), var(--gold));
   box-shadow: 0 0 18px rgba(255, 122, 170, 0.5);
-  transition: width 0.35s ease;
+}
+
+.anger-meter {
+  width: 12%;
+  background: linear-gradient(90deg, var(--danger), #ffb347);
+  box-shadow: 0 0 18px rgba(255, 126, 126, 0.35);
 }
 
 .portrait-card {
